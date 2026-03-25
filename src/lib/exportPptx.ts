@@ -227,7 +227,30 @@ function addTable(
   })
 }
 
-export function exportToPptx() {
+const IMG_URLS = [
+  "https://cdn.poehali.dev/projects/3925743b-5f4b-4588-9e99-9c66984d71e3/files/1123bfd8-c412-41d0-9536-4a9c9cbeef64.jpg",
+  "https://cdn.poehali.dev/projects/3925743b-5f4b-4588-9e99-9c66984d71e3/files/1a004a47-8855-416c-8ecd-843527dc14df.jpg",
+  "https://cdn.poehali.dev/projects/3925743b-5f4b-4588-9e99-9c66984d71e3/files/82b20461-f8d3-4495-a1c0-fadd0b5767ee.jpg",
+]
+
+async function urlToBase64(url: string): Promise<string> {
+  const resp = await fetch(url)
+  const blob = await resp.blob()
+  return new Promise((resolve) => {
+    const reader = new FileReader()
+    reader.onloadend = () => {
+      const result = reader.result as string
+      // strip "data:image/jpeg;base64," prefix — pptxgenjs wants raw base64
+      resolve(result.split(",")[1])
+    }
+    reader.readAsDataURL(blob)
+  })
+}
+
+export async function exportToPptx() {
+  // Preload all images as base64
+  const b64 = await Promise.all(IMG_URLS.map(urlToBase64))
+
   const prs = new pptxgen()
   prs.layout = "LAYOUT_WIDE"
   const W = 13.33
@@ -235,9 +258,19 @@ export function exportToPptx() {
   const SPLIT = 6.2
   const RIGHT_X = SPLIT + 0.35
 
+  // image index per slide (cycles through 3 images)
+  const imgMap = [0, 1, 2, 0, 1, 2, 0, 1]
+
   slides.forEach((s) => {
     const slide = prs.addSlide()
     slide.background = { color: BG }
+
+    // Full-slide background image (right half, darkened via low opacity overlay)
+    slide.addImage({
+      data: `image/jpeg;base64,${b64[imgMap[s.num - 1]]}`,
+      x: SPLIT + 0.02, y: 0, w: W - SPLIT - 0.02, h: H,
+      transparency: 55,
+    })
 
     // Top accent bar
     slide.addShape("rect", { x: 0, y: 0, w: W, h: 0.05, fill: { color: ACCENT }, line: { color: ACCENT } })

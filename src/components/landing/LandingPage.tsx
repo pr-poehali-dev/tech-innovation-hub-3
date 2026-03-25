@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
 import Section from './Section'
 import Layout from './Layout'
 import { sections } from './sections'
@@ -9,7 +9,14 @@ import Icon from '@/components/ui/icon'
 
 export default function LandingPage() {
   const [activeSection, setActiveSection] = useState(0)
+  const [pptxLoading, setPptxLoading] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
+
+  const handlePptx = useCallback(async () => {
+    if (pptxLoading) return
+    setPptxLoading(true)
+    try { await exportToPptx() } finally { setPptxLoading(false) }
+  }, [pptxLoading])
 
   useEffect(() => {
     const handleScroll = () => {
@@ -53,13 +60,14 @@ export default function LandingPage() {
           Скачать PDF
         </Button>
         <Button
-          onClick={exportToPptx}
+          onClick={handlePptx}
+          disabled={pptxLoading}
           variant="outline"
           size="sm"
-          className="text-[#FF4D00] bg-transparent border-[#FF4D00]/40 hover:bg-[#FF4D00] hover:text-black transition-colors gap-2"
+          className="text-[#FF4D00] bg-transparent border-[#FF4D00]/40 hover:bg-[#FF4D00] hover:text-black transition-colors gap-2 disabled:opacity-50"
         >
-          <Icon name="Presentation" size={14} />
-          Скачать PPTX
+          <Icon name={pptxLoading ? "Loader" : "Presentation"} size={14} />
+          {pptxLoading ? "Загружаю..." : "Скачать PPTX"}
         </Button>
       </div>
 
@@ -69,7 +77,7 @@ export default function LandingPage() {
             key={section.id}
             {...section}
             isActive={index === activeSection}
-            onButtonClick={exportToPptx}
+            onButtonClick={handlePptx}
           />
         ))}
       </div>

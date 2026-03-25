@@ -233,18 +233,12 @@ const IMG_URLS = [
   "https://cdn.poehali.dev/projects/3925743b-5f4b-4588-9e99-9c66984d71e3/files/82b20461-f8d3-4495-a1c0-fadd0b5767ee.jpg",
 ]
 
+const PROXY_URL = "https://functions.poehali.dev/2ccd46c8-692c-48df-80c3-d61be8e25a18"
+
 async function urlToBase64(url: string): Promise<string> {
-  const resp = await fetch(url)
-  const blob = await resp.blob()
-  return new Promise((resolve) => {
-    const reader = new FileReader()
-    reader.onloadend = () => {
-      const result = reader.result as string
-      // strip "data:image/jpeg;base64," prefix — pptxgenjs wants raw base64
-      resolve(result.split(",")[1])
-    }
-    reader.readAsDataURL(blob)
-  })
+  const resp = await fetch(`${PROXY_URL}?url=${encodeURIComponent(url)}`)
+  const data = await resp.json()
+  return data.b64 as string
 }
 
 export async function exportToPptx() {
@@ -265,11 +259,18 @@ export async function exportToPptx() {
     const slide = prs.addSlide()
     slide.background = { color: BG }
 
-    // Full-slide background image (right half, darkened via low opacity overlay)
+    // Background image — right half
+    const imgX = SPLIT + 0.02
+    const imgW = W - imgX
     slide.addImage({
       data: `image/jpeg;base64,${b64[imgMap[s.num - 1]]}`,
-      x: SPLIT + 0.02, y: 0, w: W - SPLIT - 0.02, h: H,
-      transparency: 55,
+      x: imgX, y: 0, w: imgW, h: H,
+    })
+    // Dark overlay over the image so text is readable
+    slide.addShape("rect", {
+      x: imgX, y: 0, w: imgW, h: H,
+      fill: { color: "060606", transparency: 35 },
+      line: { color: "060606", transparency: 35 },
     })
 
     // Top accent bar

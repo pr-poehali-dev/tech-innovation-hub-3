@@ -5,7 +5,6 @@ const WHITE = "FFFFFF"
 const ACCENT = "FF4D00"
 const GRAY = "9CA3AF"
 const DARK = "374151"
-const SUBTLE = "1F1F1F"
 
 interface Slide {
   num: number
@@ -139,13 +138,13 @@ function addFlowDiagram(
     const isAccent = step.startsWith("→")
     slide.addShape("rect", {
       x, y: cy, w, h: stepH,
-      fill: { color: isAccent ? "1A0A00" : SUBTLE },
-      line: { color: isAccent ? ACCENT : "2A2A2A", width: 1 },
+      fill: { color: isAccent ? "FF4D00" : "000000", transparency: isAccent ? 70 : 55 },
+      line: { color: isAccent ? ACCENT : "AAAAAA", width: isAccent ? 1.5 : 0.5 },
     })
     slide.addText(step, {
       x: x + 0.12, y: cy, w: w - 0.24, h: stepH,
       fontSize: 9,
-      color: isAccent ? ACCENT : "D1D5DB",
+      color: isAccent ? ACCENT : WHITE,
       fontFace: "Arial",
       valign: "middle",
       bold: isAccent,
@@ -154,7 +153,7 @@ function addFlowDiagram(
     if (i < steps.length - 1) {
       slide.addShape("rect", {
         x: x + w / 2 - 0.01, y: cy, w: 0.02, h: arrowH,
-        fill: { color: "444444" }, line: { color: "444444" },
+        fill: { color: "FFFFFF", transparency: 60 }, line: { color: "FFFFFF", transparency: 60 },
       })
       cy += arrowH
     }
@@ -175,8 +174,8 @@ function addBoxGrid(
     const by = y + row * (rowH + 0.12)
     slide.addShape("rect", {
       x: bx, y: by, w: colW, h: rowH,
-      fill: { color: box.accent ? "1A0A00" : SUBTLE },
-      line: { color: box.accent ? ACCENT : "2A2A2A", width: 1 },
+      fill: { color: box.accent ? "FF4D00" : "000000", transparency: box.accent ? 75 : 50 },
+      line: { color: box.accent ? ACCENT : "AAAAAA", width: box.accent ? 1.5 : 0.5 },
     })
     slide.addText(box.label, {
       x: bx + 0.15, y: by + 0.1, w: colW - 0.3, h: 0.35,
@@ -185,7 +184,7 @@ function addBoxGrid(
     if (box.sub) {
       slide.addText(box.sub, {
         x: bx + 0.15, y: by + 0.42, w: colW - 0.3, h: 0.36,
-        fontSize: 8, color: GRAY, fontFace: "Arial",
+        fontSize: 9, color: "E5E7EB", fontFace: "Arial",
       })
     }
   })
@@ -196,26 +195,27 @@ function addTable(
   rows: NonNullable<Slide["tableRows"]>,
   x: number, y: number, w: number
 ) {
+  const cellFill = { color: "000000", transparency: 50 }
   const headerRow: pptxgen.TableRow = [
     {
       text: "Участник",
-      options: { bold: true, color: "6B7280", fontSize: 8, fontFace: "Arial", fill: { color: "111111" } },
+      options: { bold: true, color: "9CA3AF", fontSize: 8, fontFace: "Arial", fill: cellFill },
     },
     {
       text: "Право",
-      options: { bold: true, color: "6B7280", fontSize: 8, fontFace: "Arial", fill: { color: "111111" }, align: "center" },
+      options: { bold: true, color: "9CA3AF", fontSize: 8, fontFace: "Arial", fill: cellFill, align: "center" },
     },
   ]
-  const dataRows: pptxgen.TableRow[] = rows.map((r, i) => [
+  const dataRows: pptxgen.TableRow[] = rows.map((r) => [
     {
       text: r.role,
-      options: { fontSize: 9, color: "D1D5DB", fontFace: "Arial", fill: { color: i % 2 === 0 ? "0D0D0D" : "080808" } },
+      options: { fontSize: 9, color: WHITE, fontFace: "Arial", fill: cellFill },
     },
     {
-      text: r.can ? "+" : "-",
+      text: r.can ? "+" : "–",
       options: {
-        fontSize: 11, bold: true, color: r.can ? ACCENT : DARK, fontFace: "Arial",
-        align: "center", fill: { color: i % 2 === 0 ? "0D0D0D" : "080808" },
+        fontSize: 12, bold: true, color: r.can ? ACCENT : "6B7280", fontFace: "Arial",
+        align: "center", fill: cellFill,
       },
     },
   ])
@@ -223,7 +223,7 @@ function addTable(
     x, y, w,
     colW: [w - 0.8, 0.8],
     rowH: 0.34,
-    border: { type: "solid", color: "1F1F1F", pt: 0.5 },
+    border: { type: "solid", color: "555555", pt: 0.3 },
   })
 }
 
@@ -272,11 +272,11 @@ export async function exportToPptx() {
       data: `image/jpeg;base64,${b64[imgMap[s.num - 1]]}`,
       x: imgX, y: 0, w: imgW, h: H,
     })
-    // Dark overlay over the image so text is readable
+    // Light dark overlay — just enough to darken, not kill visibility
     slide.addShape("rect", {
       x: imgX, y: 0, w: imgW, h: H,
-      fill: { color: "060606", transparency: 35 },
-      line: { color: "060606", transparency: 35 },
+      fill: { color: "000000", transparency: 20 },
+      line: { color: "000000", transparency: 100 },
     })
 
     // Top accent bar

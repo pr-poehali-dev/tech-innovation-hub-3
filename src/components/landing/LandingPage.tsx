@@ -3,6 +3,9 @@ import { motion, useScroll, useSpring } from 'framer-motion'
 import Section from './Section'
 import Layout from './Layout'
 import { sections } from './sections'
+import { exportToPdf } from '@/lib/exportPdf'
+import { Button } from '@/components/ui/button'
+import Icon from '@/components/ui/icon'
 
 export default function LandingPage() {
   const [activeSection, setActiveSection] = useState(0)
@@ -58,6 +61,22 @@ export default function LandingPage() {
         className="fixed top-0 left-0 right-0 h-0.5 bg-white origin-left z-30"
         style={{ scaleX }}
       />
+      <motion.div
+        className="fixed bottom-6 left-8 z-30"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.8 }}
+      >
+        <Button
+          onClick={exportToPdf}
+          variant="outline"
+          size="sm"
+          className="text-white bg-transparent border-white/30 hover:bg-white hover:text-black transition-colors gap-2"
+        >
+          <Icon name="Download" size={14} />
+          Скачать PDF
+        </Button>
+      </motion.div>
       <div
         ref={containerRef}
         className="h-full overflow-y-auto snap-y snap-mandatory"

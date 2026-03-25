@@ -227,10 +227,16 @@ function addTable(
   })
 }
 
+// 8 уникальных изображений — по одному на каждый слайд
 const IMG_URLS = [
   "https://cdn.poehali.dev/projects/3925743b-5f4b-4588-9e99-9c66984d71e3/files/1123bfd8-c412-41d0-9536-4a9c9cbeef64.jpg",
   "https://cdn.poehali.dev/projects/3925743b-5f4b-4588-9e99-9c66984d71e3/files/1a004a47-8855-416c-8ecd-843527dc14df.jpg",
   "https://cdn.poehali.dev/projects/3925743b-5f4b-4588-9e99-9c66984d71e3/files/82b20461-f8d3-4495-a1c0-fadd0b5767ee.jpg",
+  "https://cdn.poehali.dev/projects/3925743b-5f4b-4588-9e99-9c66984d71e3/files/d873da18-4b7b-4a07-aadf-2140e48bd613.jpg",
+  "https://cdn.poehali.dev/projects/3925743b-5f4b-4588-9e99-9c66984d71e3/files/d828d700-89ee-499b-b88a-60cd41501678.jpg",
+  "https://cdn.poehali.dev/projects/3925743b-5f4b-4588-9e99-9c66984d71e3/files/7ea25b85-bde4-488d-9bd2-0f25192f74c4.jpg",
+  "https://cdn.poehali.dev/projects/3925743b-5f4b-4588-9e99-9c66984d71e3/files/be32bc73-cb9a-4c3c-bead-3fe50d866d30.jpg",
+  "https://cdn.poehali.dev/projects/3925743b-5f4b-4588-9e99-9c66984d71e3/files/0ab7d362-e745-4e3c-8254-ebc497501ad3.jpg",
 ]
 
 const PROXY_URL = "https://functions.poehali.dev/2ccd46c8-692c-48df-80c3-d61be8e25a18"
@@ -252,8 +258,8 @@ export async function exportToPptx() {
   const SPLIT = 6.2
   const RIGHT_X = SPLIT + 0.35
 
-  // image index per slide (cycles through 3 images)
-  const imgMap = [0, 1, 2, 0, 1, 2, 0, 1]
+  // каждый слайд — своя картинка
+  const imgMap = [0, 1, 2, 3, 4, 5, 6, 7]
 
   slides.forEach((s) => {
     const slide = prs.addSlide()

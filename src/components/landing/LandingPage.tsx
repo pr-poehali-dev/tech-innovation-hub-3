@@ -4,6 +4,7 @@ import Section from './Section'
 import Layout from './Layout'
 import { sections } from './sections'
 import { exportToPdf } from '@/lib/exportPdf'
+import { exportToPptx } from '@/lib/exportPptx'
 import { Button } from '@/components/ui/button'
 import Icon from '@/components/ui/icon'
 
@@ -44,6 +45,10 @@ export default function LandingPage() {
     }
   }
 
+  const handleButtonClick = (action?: string) => {
+    if (action === 'pptx') exportToPptx()
+  }
+
   return (
     <Layout>
       <nav className="fixed top-0 right-0 h-screen flex flex-col justify-center z-30 p-4">
@@ -62,7 +67,7 @@ export default function LandingPage() {
         style={{ scaleX }}
       />
       <motion.div
-        className="fixed bottom-6 left-8 z-30"
+        className="fixed bottom-6 left-8 z-30 flex gap-3"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.8 }}
@@ -72,9 +77,20 @@ export default function LandingPage() {
           variant="outline"
           size="sm"
           className="text-white bg-transparent border-white/30 hover:bg-white hover:text-black transition-colors gap-2"
+          style={{ fontFamily: 'Arial, sans-serif' }}
         >
           <Icon name="Download" size={14} />
           Скачать PDF
+        </Button>
+        <Button
+          onClick={exportToPptx}
+          variant="outline"
+          size="sm"
+          className="text-[#FF4D00] bg-transparent border-[#FF4D00]/50 hover:bg-[#FF4D00] hover:text-black transition-colors gap-2"
+          style={{ fontFamily: 'Arial, sans-serif' }}
+        >
+          <Icon name="Presentation" size={14} />
+          Скачать PPTX
         </Button>
       </motion.div>
       <div
@@ -86,6 +102,7 @@ export default function LandingPage() {
             key={section.id}
             {...section}
             isActive={index === activeSection}
+            onButtonClick={() => handleButtonClick(section.buttonAction)}
           />
         ))}
       </div>
